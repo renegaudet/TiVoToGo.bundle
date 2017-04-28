@@ -4,7 +4,7 @@ from os import kill, getpid, environ, path, unlink, open, close, write, O_RDWR, 
 import sys
 import platform
 from time import sleep
-import urllib2, cookielib
+import urllib2, cookielib, ssl
 from lxml import etree
 import base64
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
@@ -68,7 +68,8 @@ def getTivoShowsByIPURL(tivoip, url, dir):
         try:
             authhandler = urllib2.HTTPDigestAuthHandler()
             authhandler.add_password("TiVo DVR", "https://" + tivoip + ":443/", "tivo", getMyMAC())
-            opener = urllib2.build_opener(authhandler)
+            ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+            opener = urllib2.build_opener(urllib2.HTTPSHandler(context=ssl_context), authhandler)
             pagehandle = opener.open(qurl)
         except IOError, e:
             Log("Got a URLError trying to open %s" % url)
