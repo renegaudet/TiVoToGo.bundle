@@ -34,7 +34,8 @@ DL_QUEUE = deque()
 
 # For the UpdateTTGFolder function
 HOST = 'http://localhost:32400'
-SECTIONS = '%s/library/sections/'
+SECTIONS = '/library/sections/'
+PLEXTOKEN = environ['PLEXTOKEN'] if 'PLEXTOKEN' in environ else ''
 
 ####################################################################################################
 def Start():
@@ -346,14 +347,14 @@ def getShowContainer(url, show_url, title, summary, thumb, tagline, duration):
 ####################################################################################################
 def UpdateTTGFolder():
     try:
-        sections = XML.ElementFromURL(SECTIONS % (HOST), cacheTime=0).xpath('//Directory')
+        sections = XML.ElementFromURL(HOST + SECTIONS + '?X-Plex-Token=' + PLEXTOKEN, cacheTime=0).xpath('//Directory')
         togoupdatedir = Prefs['togoupdatedir'] or "TiVo To Go"
         for section in sections:
             key = section.get('key')
             title = section.get('title')
             if title == togoupdatedir:
                 Log.Info('Updating Library #%s - %s' % (key, title))
-                HTTP.Request(SECTIONS % (HOST) + key + '/refresh', cacheTime=0).content
+                HTTP.Request(HOST + SECTIONS + key + '/refresh?X-Plex-Token=' + PLEXTOKEN, cacheTime=0).content
     except Exception, e:
         Log("Error Updating TTG Folder: %s" % e)
 
