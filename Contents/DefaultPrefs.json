@@ -9,7 +9,7 @@
 		"id": "tivoStaticIP",
 		"type": "text",
 		"default": "",
-		"label": "Forced TiVo IP Address.  Leave blank for auto discovery(Linux Only)."
+		"label": "Forced TiVo IP Address. Leave blank for auto discovery (Linux only)"
 	},
 	{
 		"id": "togo",
@@ -34,5 +34,5 @@
 		"type": "text",
 		"default": "",
 		"label": "Comma separated list of TiVo names to ignore"
-	},
+	}
 ]
