@@ -115,7 +115,7 @@ def getTivoShowsByIPURL(tivoip, url, dir):
                 show_in_progress = getNameFromXML(show,"g:Details/g:InProgress/text()")
                 show_copyright = getNameFromXML(show, "g:Details/g:CopyProtected/text()")
 
-                show_desc = show_desc[:show_desc.rfind("Copyright Tribune Media")]
+                show_desc = show_desc[:show_desc.rfind("Copyright Rovi, Inc")]
                 show_id  =  show_url[show_url.rfind("&id=")+4:]
                 if (show_episode_num != ""):
                     show_season_num = show_episode_num[:-2]
