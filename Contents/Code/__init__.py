@@ -43,8 +43,8 @@ def Start():
     HTTP.CacheTime = 3600*5
 
 ####################################################################################################
-def getMyMAC():
-    return Prefs['MAC'] or ""
+def getMyMAK():
+    return Prefs['MAK'] or ""
 
 
 ####################################################################################################
@@ -68,7 +68,7 @@ def getTivoShowsByIPURL(tivoip, url, dir):
         Log("getTivoShowsByIPURL: %s" % qurl)
         try:
             authhandler = urllib2.HTTPDigestAuthHandler()
-            authhandler.add_password("TiVo DVR", "https://" + tivoip + ":443/", "tivo", getMyMAC())
+            authhandler.add_password("TiVo DVR", "https://" + tivoip + ":443/", "tivo", getMyMAK())
             ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
             opener = urllib2.build_opener(urllib2.HTTPSHandler(context=ssl_context), authhandler)
             pagehandle = opener.open(qurl)
@@ -279,12 +279,12 @@ class MyVideoHandler(BaseHTTPRequestHandler):
       tvd = getTvd()
       curl = getCurl()
       Log.Debug("TVD: %s" % tvd)
-      Log.Debug("CMD: %s %s %s %s %s %s %s %s" % (curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAC(), "-c", "/tmp/cookies.txt"))
-      Log.Debug(" PIPED to: %s %s %s %s" % (tvd, "-m", getMyMAC(), "-"))
+      Log.Debug("CMD: %s %s %s %s %s %s %s %s" % (curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", "/tmp/cookies.txt"))
+      Log.Debug(" PIPED to: %s %s %s %s" % (tvd, "-m", getMyMAK(), "-"))
       if "LD_LIBRARY_PATH" in environ.keys():
         del environ["LD_LIBRARY_PATH"]
-      curlp = Popen([curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAC(), "-c", "/tmp/cookies.txt"], stdout=PIPE)
-      tivodecode = Popen([tvd, "-m", getMyMAC(), "-"],stdin=curlp.stdout, stdout=PIPE)
+      curlp = Popen([curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", "/tmp/cookies.txt"], stdout=PIPE)
+      tivodecode = Popen([tvd, "-m", getMyMAK(), "-"],stdin=curlp.stdout, stdout=PIPE)
       Log("Starting decoder")
       while True:
           data = tivodecode.stdout.read(4192)
@@ -373,8 +373,8 @@ def dlThread():
         try:
             tvd = getTvd()
             curl = getCurl()
-            Log.Debug("CMD: %s \"%s\" %s %s %s %s %s %s" % (curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAC(), "-c", "/tmp/cookies.txt"))
-            Log.Debug(" PIPED to: \"%s\" %s %s %s \"%s\" %s" % (tvd, "-m", getMyMAC(), "-o", fileName, "-"))
+            Log.Debug("CMD: %s \"%s\" %s %s %s %s %s %s" % (curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", "/tmp/cookies.txt"))
+            Log.Debug(" PIPED to: \"%s\" %s %s %s \"%s\" %s" % (tvd, "-m", getMyMAK(), "-o", fileName, "-"))
             Log("Downloading: %s From: %s", fileName, url)
             if "LD_LIBRARY_PATH" in environ.keys():
                 del environ["LD_LIBRARY_PATH"]
@@ -382,8 +382,8 @@ def dlThread():
                 unlink("/tmp/cookies.txt")
             except:
                 pass
-            curlp = Popen([curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAC(), "-c", "/tmp/cookies.txt"], stdout=PIPE)
-            tivodecode = Popen([getTvd(), "-m", getMyMAC(), "-o", fileName, "-"], stdin=curlp.stdout)
+            curlp = Popen([curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", "/tmp/cookies.txt"], stdout=PIPE)
+            tivodecode = Popen([getTvd(), "-m", getMyMAK(), "-o", fileName, "-"], stdin=curlp.stdout)
             GL_CURL_PID = curlp.pid
             # Wait two seconds for it to get going and then issue a update for the TiVo folder
             sleep(2)
@@ -558,11 +558,11 @@ def getStatus(rand, execkill=0):
 @handler("/video/tivotogo", NAME, thumb="icon-default.jpg", art="art-default.jpg")
 def MainMenu():
 
-    myMAC = getMyMAC()
+    myMAK = getMyMAK()
 
     oc = ObjectContainer()
 
-    if (len(myMAC) == 10):
+    if (len(myMAK) == 10):
         tivoName = Prefs['tivoStaticIP'] or ""
         if tivoName == "":
             discoverTiVo(oc)

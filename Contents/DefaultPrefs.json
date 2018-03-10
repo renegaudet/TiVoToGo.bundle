@@ -1,6 +1,6 @@
 [
 	{
-		"id": "MAC",
+		"id": "MAK",
 		"type": "text",
 		"default": "",
 		"label": "TiVo Media Access Key"
