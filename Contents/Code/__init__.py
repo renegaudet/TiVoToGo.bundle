@@ -115,6 +115,12 @@ def getTivoShowsByIPURL(tivoip, url, dir):
                 show_in_progress = getNameFromXML(show,"g:Details/g:InProgress/text()")
                 show_copyright = getNameFromXML(show, "g:Details/g:CopyProtected/text()")
 
+                show_programid = getNameFromXML(show, "g:Details/g:ProgramId/text()")
+                if (show_programid[:2] == "MV"):
+                    show_type_thumb = 'art-movie.jpg'
+                else:
+                    show_type_thumb = 'art-tv.jpg'
+
                 show_desc = show_desc[:show_desc.rfind("Copyright Rovi, Inc")]
                 show_id  =  show_url[show_url.rfind("&id=")+4:]
                 if (show_episode_num != ""):
@@ -132,7 +138,7 @@ def getTivoShowsByIPURL(tivoip, url, dir):
                                                              show_url = show_url,
                                                              title = target_name,
                                                              summary = show_desc,
-                                                             thumb = R('art-default.jpg'),
+                                                             thumb = show_type_thumb,
                                                              tagline = show_episode_name,
                                                              duration = show_duration),
                                                 title=L(target_name)))
@@ -140,7 +146,7 @@ def getTivoShowsByIPURL(tivoip, url, dir):
                         dir.add(CreateVideoClipObject(url = localurl,
                                                       title = target_name,
                                                       summary = show_desc,
-                                                      thumb = R('art-default.jpg'),
+                                                      thumb = show_type_thumb,
                                                       tagline = show_episode_name,
                                                       duration = show_duration))
                 else:
@@ -338,7 +344,7 @@ def getShowContainer(url, show_url, title, summary, thumb, tagline, duration):
     oc.add(CreateVideoClipObject(url = url,
                                  title = title,
                                  summary = summary,
-                                 thumb = R('art-default.jpg'),
+                                 thumb = R(thumb),
                                  tagline = tagline,
                                  duration = duration))
     oc.add(DirectoryObject(key = Callback(downloadLocal, url=show_url, title=title), title = 'Download Locally'))
