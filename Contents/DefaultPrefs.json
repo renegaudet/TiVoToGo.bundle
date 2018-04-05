@@ -9,30 +9,43 @@
 		"id": "tivoStaticIP",
 		"type": "text",
 		"default": "",
-		"label": "Forced TiVo IP Address. Leave blank for auto discovery (Linux only)"
+		"label": "Forced TiVo IP address (leave blank for auto discovery - Linux only)"
+	},
+	{
+		"id": "browseblacklist",
+		"type": "text",
+		"default": "",
+		"label": "Comma-separated list of TiVo names to ignore"
 	},
 	{
 		"id": "togo",
 		"type": "bool",
-		"label": "Enable To Go Downloads",
+		"label": "Enable To Go downloads",
 		"default": "false"
 	},
 	{
 		"id": "togodir",
 		"type": "text",
 		"default": "",
-		"label": "TiVo To Go Download Directory"
+		"label": "TiVo To Go download directory"
 	},
 	{
 		"id": "togoupdatedir",
 		"type": "text",
 		"default": "",
-		"label": "Plex Library name to update after initiating a download. (Default if blank: TiVo To Go)"
+		"label": "Plex Library name to update after initiating download (blank = TiVo To Go)"
 	},
 	{
-		"id": "browseblacklist",
+		"id": "rpc_username",
 		"type": "text",
 		"default": "",
-		"label": "Comma separated list of TiVo names to ignore"
+		"label": "Optional: TiVo Online username (for RPC queries)"
+	},
+	{
+		"id": "rpc_password",
+		"type": "text",
+                "option": "hidden",
+		"default": "",
+		"label": "Optional: TiVo Online password (for RPC queries)"
 	}
 ]

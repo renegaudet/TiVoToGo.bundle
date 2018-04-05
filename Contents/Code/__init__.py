@@ -37,6 +37,18 @@ HOST = 'http://localhost:32400'
 SECTIONS = '/library/sections/'
 PLEXTOKEN = environ['PLEXTOKEN'] if 'PLEXTOKEN' in environ else ''
 
+# use portions of rpcSearch125.py (thanks to dlfl/MG3) for TiVo Mind server calls (to look up episode information)
+import logging
+import random
+import json
+
+TIVO_ADDR  = 'middlemind.tivo.com'
+TIVO_PORT  = 443
+session_id = random.randrange(0x26c000, 0x27dc20)
+rpc_id     = 0
+body_id    = ''
+
+
 ####################################################################################################
 def Start():
     ObjectContainer.title1 = NAME
@@ -128,9 +140,10 @@ def getTivoShowsByIPURL(tivoip, url, dir):
                     show_season_ep_num = show_episode_num[-2:]
 
                 if show_episode_name != "":
-                    target_name = show_name + ": " + show_episode_name
+                    target_name = show_name + ' - ' + show_episode_name
                 else:
                     target_name = show_name
+
                 if show_copyright != "Yes" and show_in_progress != "Yes":
                     localurl = "http://127.0.0.1:" + str(TIVO_PORT) + "/" + base64.b64encode(show_url, "-_")
                     if Prefs['togo']:
@@ -347,7 +360,7 @@ def getShowContainer(url, show_url, title, summary, thumb, tagline, duration):
                                  thumb = R(thumb),
                                  tagline = tagline,
                                  duration = duration))
-    oc.add(DirectoryObject(key = Callback(downloadLocal, url=show_url, title=title), title = 'Download Locally'))
+    oc.add(DirectoryObject(key = Callback(downloadLocal, url=show_url, title=title, tagline=tagline), title = 'Download Locally'))
     return oc
 
 ####################################################################################################
@@ -409,7 +422,7 @@ def dlThread():
 ####################################################################################################
 
 @route("/video/tivotogo/downloadlocal")
-def downloadLocal(url, title):
+def downloadLocal(url, title, tagline):
     global DownloadThread
     global DL_QUEUE
     ttgdir = Prefs['togodir']
@@ -427,6 +440,25 @@ def downloadLocal(url, title):
 
     Log("URL: %s" % url)
     Log("Title: %s" % title)
+
+    # use a TiVo Mind RPC call to retrieve the season/episode number of the recording, if applicable
+    rpc_username = Prefs['rpc_username']
+    rpc_password = Prefs['rpc_password']
+    if tagline and rpc_username and rpc_password:
+        title_search = title[:title.find(" - ")]
+        Log("Search Title  : %s" % title_search)
+        Log("Search Episode: %s" % tagline)
+        Log("Executing episodeSearch")
+        remote = Remote(rpc_username, rpc_password)
+        result = remote.episodeSearch(title_search, tagline)
+        content = result.get('content')
+        if content:
+            for c in content:
+                seasonNum  = str(c.get('seasonNumber')).zfill(2)
+                episodeNum = str(c.get('episodeNum')).lstrip('[').rstrip(']')
+                if seasonNum != "None" and episodeNum != "None":
+                    title = title_search + ' S' + seasonNum + 'E' + episodeNum + ' ' + tagline
+        Log("Updated Title : %s" % title)
 
     try:
         if sys.platform == "win32":
@@ -580,3 +612,108 @@ def MainMenu():
     oc.add(PrefsObject(title=L("Preferences...")))
 
     return oc
+
+####################################################################################################
+
+# use portions of rpcSearch125.py (thanks to dlfl/MG3) for TiVo Mind server calls (to look up episode information)
+
+def RpcRequest(type, monitor=False, **kwargs):
+  global rpc_id
+  rpc_id += 1
+
+  headers = '\r\n'.join((
+      'Type: request',
+      'RpcId: %d' % rpc_id,
+      'SchemaVersion: 14',
+      'Content-Type: application/json',
+      'RequestType: %s' % type,
+      'ResponseCount: %s' % (monitor and 'multiple' or 'single'),
+      'BodyId: %s' % body_id,
+      'X-ApplicationName: Quicksilver',
+      'X-ApplicationVersion: 1.2',
+      'X-ApplicationSessionId: 0x%x' % session_id,
+      )) + '\r\n'
+
+  req_obj = dict(**kwargs)
+  req_obj.update({'type': type})
+
+  body = json.dumps(req_obj) + '\n'
+
+  # The "+ 2" is for the '\r\n' we'll add to the headers next.
+  start_line = 'MRPC/2 %d %d' % (len(headers) + 2, len(body))
+
+  return '\r\n'.join((start_line, headers, body))
+
+class Remote(object):
+  username = ''
+  password = ''
+
+
+  def __init__(self, myusername, mypassword):
+    username = myusername
+    password = mypassword
+    self.buf = ''
+    self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    certfile_path = sys.path[0] + "/cdata.pem"
+    self.ssl_socket = ssl.wrap_socket(self.socket, certfile=certfile_path)
+    try:
+      self.ssl_socket.connect((TIVO_ADDR, TIVO_PORT))
+    except:
+      Log("connect error")
+    try:
+      self.Auth(username, password)
+    except:
+      Log("credential error")
+
+  def Read(self):
+    start_line = ''
+    head_len = None
+    body_len = None
+
+    while True:
+      self.buf = self.buf + self.ssl_socket.read(16)
+      match = re.match(r'MRPC/2 (\d+) (\d+)\r\n', self.buf)
+      if match:
+        start_line = match.group(0)
+        head_len = int(match.group(1))
+        body_len = int(match.group(2))
+        break
+
+    need_len = len(start_line) + head_len + body_len
+    while len(self.buf) < need_len:
+      self.buf = self.buf + self.ssl_socket.read(1024)
+    buf = self.buf[:need_len]
+    self.buf = self.buf[need_len:]
+
+    logging.debug('READ %s', buf)
+    return json.loads(buf[-1 * body_len:])
+
+  def Write(self, data):
+    logging.debug('SEND %s', data)
+    self.ssl_socket.send(data)
+
+  def Auth(self, username, password):
+    self.Write(RpcRequest('bodyAuthenticate',
+        credential={
+            'type': 'mmaCredential',
+            'username': username,
+            'password': password,
+            }
+        ))
+    result = self.Read()
+    if result['status'] != 'success':
+      Log("Authentication failed!  Got: %s" % result)
+      sys.exit(1)
+
+  def episodeSearch(self, title, subtitle):
+    req = RpcRequest('contentSearch',
+      title = title,
+      subtitle = subtitle,
+      # only return the first match; this will cause issues with multi-part episodes
+      # but it's just a hack anyway
+      count = 1
+    )
+    self.Write(req)
+    result = self.Read()
+    return result
+
