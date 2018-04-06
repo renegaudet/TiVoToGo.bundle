@@ -717,3 +717,8 @@ class Remote(object):
     result = self.Read()
     return result
 
+###################################################################################################
+
+def ValidatePrefs():
+    pass
+
