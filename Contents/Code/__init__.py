@@ -367,13 +367,14 @@ def getShowContainer(url, show_url, title, summary, thumb, tagline, duration):
 def UpdateTTGFolder():
     try:
         sections = XML.ElementFromURL(HOST + SECTIONS + '?X-Plex-Token=' + PLEXTOKEN, cacheTime=0).xpath('//Directory')
-        togoupdatedir = Prefs['togoupdatedir'] or "TiVo To Go"
+        togoupdatedir = Prefs['togoupdatedir'].split(",") or "TiVo To Go"
         for section in sections:
             key = section.get('key')
             title = section.get('title')
-            if title == togoupdatedir:
-                Log.Info('Updating Library #%s - %s' % (key, title))
-                HTTP.Request(HOST + SECTIONS + key + '/refresh?X-Plex-Token=' + PLEXTOKEN, cacheTime=0).content
+            for current_dir in togoupdatedir:
+                if title == current_dir:
+                    Log.Info('Updating Library #%s - %s' % (key, title))
+                    HTTP.Request(HOST + SECTIONS + key + '/refresh?X-Plex-Token=' + PLEXTOKEN, cacheTime=0).content
     except Exception, e:
         Log("Error Updating TTG Folder: %s" % e)
 

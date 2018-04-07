@@ -32,8 +32,8 @@
 	{
 		"id": "togoupdatedir",
 		"type": "text",
-		"default": "",
-		"label": "Plex Library name to update after initiating download (blank = TiVo To Go)"
+		"default": "TiVo To Go",
+		"label": "Comma-separated list of Plex libraries to refresh after initiating download"
 	},
 	{
 		"id": "rpc_username",
