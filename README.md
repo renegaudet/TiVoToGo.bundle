@@ -1,17 +1,17 @@
 # TiVo To Go Plex Channel Plugin
 
-This Plex plugin uses the TiVo To Go API to watch a stream off a TiVo or to download a recorded program from the TiVo. It requires a Series 2 or newer TiVo with a network connection. The Plex Media Server (PMS) should have a high speed connection between itself and the TiVo.
+This Plex plugin uses the TiVo To Go API to watch a stream off, or download a recorded program from, a TiVo DVR. It requires a Series 2 or newer TiVo with a network connection. The Plex Media Server (PMS) should have a high speed connection between itself and the TiVo.
 
 _Q:_ What would I use this channel for?
 
 _A:_ You can browse to a show on your TiVo through Plex and watch (stream) it without needing to first download it to your PMS.
 
-_Q:_ Can I download something from the TiVo it to the Plex Media Server using this channel?
+_Q:_ Can I download something from the TiVo to the Plex Media Server using this channel?
 
 _A:_ Yes! If you enable the download option and specify a folder name, the plugin will display an extra menu item to download the content to your PMS.
 
    _NOTE:_ You should create a library on your PMS which points to the same directory that you are downloading the files into. If you name the Plex library "TiVo To Go" it will automatically get refreshed when downloads are initiated _and_ when they complete. If
-   you want to name the Plex library something different (or include it in multiple libraries) simply add the name(s) in the plugin preferences (see the Instructions section below).
+   you want to name the Plex library something different (or include it in multiple libraries) simply add the name(s) in the plugin preferences (see the Steps section below).
 
 - - -
 ## Installation
@@ -30,8 +30,8 @@ _A:_ Yes! If you enable the download option and specify a folder name, the plugi
     * Linux: /var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-ins
 3.  Make sure to update the plugins settings:
     * Enter your Media Access Key (MAK) from the TiVo
-    * Enter an IP address for the TiVo if the Plex Server is on a different subnet (and then exit the channel and enter it again)
-    * If you want enable the offline downloads check the "Enable To GO downloads" box and fill in a directory that is writable by the plex user
+    * Enter an IP address for the TiVo if the Plex Server is on a different subnet (then exit the channel and start it again)
+    * If you want enable the offline downloads check the "Enable To Go downloads" box and fill in a directory that is writable by the plex user
     * Enter the name of the Plex library to automatically refresh once a download has started. If left blank, this will default to "TiVo To Go." You can enter multiple library names, separated by commas if you want. This lets you add your download directory to multiple libraries using different metadata agents (i.e., for TV Shows and Movies)
     * If you want the plugin to [properly name](https://support.plex.tv/articles/200220687-naming-series-season-based-tv-shows/) your downloaded file (for Plex agent metadata lookups), enter your TiVo Online username and password in the appropriate fields. 
 
