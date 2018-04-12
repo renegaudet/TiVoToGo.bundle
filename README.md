@@ -41,7 +41,7 @@ _A:_ Yes! If you enable the download option and specify a folder name, the plugi
 - use the urllib instead of curl
 - stop using /tmp/cookies.txt
 - use dynamic sockets and a fixed URL for the live stream video
-- if the community support for the MPEG-TS improves, add MPEG-TS support, for now it only works with MPEG-PS
+- if the community support for the MPEG-TS improves, add MPEG-TS support, for now it only works with MPEG-PS (switch to [tivolibre](https://github.com/fflewddur/tivolibre) instead of tivodecode?)
 - validate TiVo credentials when saving preferences (in the validatePrefs placeholder)
 - set thumbnails for folders, episodes, download action, etc.
 
