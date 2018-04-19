@@ -456,7 +456,7 @@ def downloadLocal(url, title, tagline):
         if content:
             for c in content:
                 seasonNum  = str(c.get('seasonNumber')).zfill(2)
-                episodeNum = str(c.get('episodeNum')).lstrip('[').rstrip(']')
+                episodeNum = str(c.get('episodeNum')).lstrip('[').rstrip(']').zfill(2)
                 if seasonNum != "None" and episodeNum != "None":
                     title = title_search + ' S' + seasonNum + 'E' + episodeNum + ' ' + tagline
         Log("Updated Title : %s" % title)
