@@ -42,11 +42,11 @@ import logging
 import random
 import json
 
-TIVO_ADDR  = 'middlemind.tivo.com'
-TIVO_PORT  = 443
-session_id = random.randrange(0x26c000, 0x27dc20)
-rpc_id     = 0
-body_id    = ''
+TIVO_ADDR     = 'middlemind.tivo.com'
+TIVO_PORT_SSL = 443
+session_id    = random.randrange(0x26c000, 0x27dc20)
+rpc_id        = 0
+body_id       = ''
 
 
 ####################################################################################################
@@ -658,7 +658,7 @@ class Remote(object):
     certfile_path = sys.path[0] + "/cdata.pem"
     self.ssl_socket = ssl.wrap_socket(self.socket, certfile=certfile_path)
     try:
-      self.ssl_socket.connect((TIVO_ADDR, TIVO_PORT))
+      self.ssl_socket.connect((TIVO_ADDR, TIVO_PORT_SSL))
     except:
       Log("connect error")
     try:
