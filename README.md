@@ -23,17 +23,20 @@ _A:_ Yes! If you enable the download option and specify a folder name, the plugi
 
 ### Steps
 
-1.  Install curl if you don't already have it
-2.  Copy the TiVoToGo.bundle to your plugin directory:
+1.  Install [curl](https://curl.haxx.se/) if you don't already have it. 
+2.  If you want to use [tivolibre](https://github.com/fflewddur/tivolibre) (see below), make sure a Java runtime for your platform is also installed.
+3.  Copy the TiVoToGo.bundle to your plugin directory:
     * Mac: ~/Library/Application Support/Plex Media Server/Plug-ins
     * Windows: C:\Users\\_&lt;username&gt;_\AppData\Local\Plex Media Server\Plug-ins
     * Linux: /var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Plug-ins
-3.  Make sure to update the plugins settings:
+4.  Launch the channel via the Plugins or Channels menu in Plex.
+5.  Update the plugin settings:
     * Enter your Media Access Key (MAK) from the TiVo
     * Enter an IP address for the TiVo if the Plex Server is on a different subnet (then exit the channel and start it again)
     * If you want enable the offline downloads check the "Enable To Go downloads" box and fill in a directory that is writable by the plex user
-    * Enter the name of the Plex library to automatically refresh once a download has started. If left blank, this will default to "TiVo To Go." You can enter multiple library names, separated by commas if you want. This lets you add your download directory to multiple libraries using different metadata agents (i.e., for TV Shows and Movies)
+    * Enter the name of the Plex library to automatically refresh once a download has started. If left blank, this will default to "TiVo To Go." You can enter multiple library names, separated by commas if you want. This lets you add your download directory to multiple libraries using different metadata agents (i.e., for TV Shows and Movies).
     * If you want the plugin to [properly name](https://support.plex.tv/articles/200220687-naming-series-season-based-tv-shows/) your downloaded file (for Plex agent metadata lookups), enter your TiVo Online username and password in the appropriate fields. 
+    * If you want to use [tivolibre](https://github.com/fflewddur/tivolibre) (instead of tivodecode) for better MPEG-TS support, check the "Use tivolibre" box and fill in the path to your platform's Java runtime (ex. /usr/bin/java on Linux).
 
 - - -
 ## To Do
@@ -41,9 +44,10 @@ _A:_ Yes! If you enable the download option and specify a folder name, the plugi
 - use the urllib instead of curl
 - stop using /tmp/cookies.txt
 - use dynamic sockets and a fixed URL for the live stream video
-- if the community support for the MPEG-TS improves, add MPEG-TS support, for now it only works with MPEG-PS (switch to [tivolibre](https://github.com/fflewddur/tivolibre) instead of tivodecode?)
 - validate TiVo credentials when saving preferences (in the validatePrefs placeholder)
 - set thumbnails for folders, episodes, download action, etc.
+- fix Suggestions folder
+- check for valid characters in download filename
 
 - - -
 ## Contact
