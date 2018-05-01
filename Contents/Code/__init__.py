@@ -255,6 +255,37 @@ def getTvd():
                      'tivodecode')
 
 ####################################################################################################
+def getTvl():
+
+    # similar to getTvd above, except build the path to the TiVoLibre java file instead
+
+    # OSX
+    if sys.platform == "darwin":
+        return path.join(environ['HOME'],
+                         'Library',
+                         'Application Support',
+                         'Plex Media Server',
+                         'Plug-ins',
+                         BUNDLE_NAME,
+                         'Contents',
+                         'Resources',
+                         'TivoDecoder.jar')
+
+    if 'PLEXLOCALAPPDATA' in environ:
+        key = 'PLEXLOCALAPPDATA'
+    else:
+        key = 'LOCALAPPDATA'
+
+    # Windows and Linux
+    return path.join(environ[key],
+                     'Plex Media Server',
+                     'Plug-ins',
+                     BUNDLE_NAME,
+                     'Contents',
+                     'Resources',
+                     'TivoDecoder.jar')
+
+####################################################################################################
 def getCurl():
     if sys.platform != "win32":
         return "/usr/bin/curl"
@@ -295,15 +326,20 @@ class MyVideoHandler(BaseHTTPRequestHandler):
           self.send_response(200)
       self.send_header('Content-type', 'video/mpeg2')
       self.end_headers()
-      tvd = getTvd()
-      curl = getCurl()
-      Log.Debug("TVD: %s" % tvd)
-      Log.Debug("CMD: %s %s %s %s %s %s %s %s" % (curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", "/tmp/cookies.txt"))
-      Log.Debug(" PIPED to: %s %s %s %s" % (tvd, "-m", getMyMAK(), "-"))
       if "LD_LIBRARY_PATH" in environ.keys():
         del environ["LD_LIBRARY_PATH"]
+      curl = getCurl()
+      Log.Debug("CMD: %s %s %s %s %s %s %s %s" % (curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", "/tmp/cookies.txt"))
       curlp = Popen([curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", "/tmp/cookies.txt"], stdout=PIPE)
-      tivodecode = Popen([tvd, "-m", getMyMAK(), "-"],stdin=curlp.stdout, stdout=PIPE)
+      if Prefs['tivolibre']:
+          tvd = getTvl()
+          java_path = Prefs['java_path']
+          Log.Debug("PIPED to: %s %s \"%s\" %s %s %s" % (java_path, "-jar", tvd, "-m", getMyMAK(), "-"))
+          tivodecode = Popen([java_path, "-jar", tvd, "-m", getMyMAK(), "-"],stdin=curlp.stdout, stdout=PIPE)
+      else:
+          tvd = getTvd()
+          Log.Debug("PIPED to: \"%s\" %s %s %s" % (tvd, "-m", getMyMAK(), "-"))
+          tivodecode = Popen([tvd, "-m", getMyMAK(), "-"],stdin=curlp.stdout, stdout=PIPE)
       Log("Starting decoder")
       while True:
           data = tivodecode.stdout.read(4192)
@@ -391,11 +427,9 @@ def dlThread():
         else:
             break
         try:
-            tvd = getTvd()
+            Log("Downloading: %s From: %s", fileName, url)
             curl = getCurl()
             Log.Debug("CMD: %s \"%s\" %s %s %s %s %s %s" % (curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", "/tmp/cookies.txt"))
-            Log.Debug(" PIPED to: \"%s\" %s %s %s \"%s\" %s" % (tvd, "-m", getMyMAK(), "-o", fileName, "-"))
-            Log("Downloading: %s From: %s", fileName, url)
             if "LD_LIBRARY_PATH" in environ.keys():
                 del environ["LD_LIBRARY_PATH"]
             try:
@@ -403,7 +437,15 @@ def dlThread():
             except:
                 pass
             curlp = Popen([curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", "/tmp/cookies.txt"], stdout=PIPE)
-            tivodecode = Popen([getTvd(), "-m", getMyMAK(), "-o", fileName, "-"], stdin=curlp.stdout)
+            if Prefs['tivolibre']: 
+                tvd = getTvl()
+                java_path = Prefs['java_path']
+                Log.Debug("PIPED to: %s %s \"%s\" %s %s %s \"%s\" %s" % (java_path, "-jar", tvd, "-m", getMyMAK(), "-o", fileName, "-"))
+                tivodecode = Popen([java_path, "-jar", tvd, "-m", getMyMAK(), "-o", fileName, "-"], stdin=curlp.stdout)
+            else:
+                tvd = getTvd()
+                Log.Debug("PIPED to: \"%s\" %s %s %s \"%s\" %s" % (tvd, "-m", getMyMAK(), "-o", fileName, "-"))
+                tivodecode = Popen([tvd, "-m", getMyMAK(), "-o", fileName, "-"], stdin=curlp.stdout)
             GL_CURL_PID = curlp.pid
             # Wait two seconds for it to get going and then issue a update for the TiVo folder
             sleep(2)

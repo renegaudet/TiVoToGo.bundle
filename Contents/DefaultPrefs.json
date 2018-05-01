@@ -47,5 +47,17 @@
                 "option": "hidden",
 		"default": "",
 		"label": "Optional: TiVo Online password (for RPC queries)"
+	},
+	{
+		"id": "tivolibre",
+		"type": "bool",
+		"label": "Use tivolibre (instead of tivodecode)",
+		"default": "false"
+	},
+	{
+		"id": "java_path",
+		"type": "text",
+		"default": "/usr/bin/java",
+		"label": "Path to Java runtime (required to use tivolibre)"
 	}
 ]
