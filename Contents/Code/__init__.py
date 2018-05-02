@@ -89,9 +89,9 @@ def getTivoShowsByIPURL(tivoip, url, dir):
             if hasattr(e, 'code'):
                 Log("Failed with code : %s" % e.code)
                 if (int(e.code) == 401):
-                    dir.SetMessage("Couldn't authenticate", "Failed to authenticate to tivo.  Is the Media Access Key correct?")
+                    dir.SetMessage("Couldn't authenticate", "Failed to authenticate to TiVo.  Is the Media Access Key correct?")
                 else:
-                    dir.SetMessage("Couldn't connect", "Failed to connect to tivo")
+                    dir.SetMessage("Couldn't connect", "Failed to connect to TiVo")
             if hasattr(e, 'reason'):
                 Log("Failed with reason : %s" % e.reason)
             return dir
@@ -177,7 +177,7 @@ def getTivoShowsByIPURL(tivoip, url, dir):
 def CreateVideoClipObject(url, title, thumb, container = False, summary="", duration=14400000, tagline="", **kwargs):
     Log.Debug("Starting a thread")
     thread.start_new_thread(TivoServerThread, ("127.0.0.1", TIVO_PORT))
-    Log.Debug("Done Starting a thread")
+    Log.Debug("Done starting a thread")
     vco = VideoClipObject(
         key = Callback(CreateVideoClipObject, url = url, title = title, thumb = thumb,
                        tagline = tagline,
@@ -360,26 +360,26 @@ class MyVideoHandler(BaseHTTPRequestHandler):
     return
 
   def do_POST(self):
-    Log("Got a Post")
+    Log("Got a POST")
 
 ####################################################################################################
 
 def TivoServerThread(ip, port):
   try:
     httpserver = HTTPServer((ip, port), MyVideoHandler)
-    Log("Server Starting: %i pid %i" % (port, getpid()))
+    Log("Server starting: port %i, PID %i" % (port, getpid()))
     httpserver.allow_reuse_address = True
     httpserver.serve_forever()
-    Log("Server Ooopsed out %i" % port)
+    Log("Server ooopsed out: port %i" % port)
   except :
-    Log("Server Already Running or port in use")
+    Log("Server already running or port in use")
   
 ####################################################################################################
 
 def TivoVideo(count, pathNouns):
   Log("Starting a thread")
   thread.start_new_thread(TivoServerThread, ("127.0.0.1", TIVO_PORT))
-  Log("Done Starting a thread")
+  Log("Done starting a thread")
   url = "http://127.0.0.1:" + str(TIVO_PORT) + "/" + pathNouns[1] + "/" + pathNouns[2]
   Log("TivoVideo: URL %s" % url)
   return Plugin.Redirect (url)
@@ -409,10 +409,10 @@ def UpdateTTGFolder():
             title = section.get('title')
             for current_dir in togoupdatedir:
                 if title == current_dir:
-                    Log.Info('Updating Library #%s - %s' % (key, title))
+                    Log.Info('Updating library #%s - %s' % (key, title))
                     HTTP.Request(HOST + SECTIONS + key + '/refresh?X-Plex-Token=' + PLEXTOKEN, cacheTime=0).content
     except Exception, e:
-        Log("Error Updating TTG Folder: %s" % e)
+        Log("Error updating TTG folder: %s" % e)
 
 ####################################################################################################
 
@@ -427,7 +427,7 @@ def dlThread():
         else:
             break
         try:
-            Log("Downloading: %s From: %s", fileName, url)
+            Log("Downloading: %s from: %s", fileName, url)
             curl = getCurl()
             Log.Debug("CMD: %s \"%s\" %s %s %s %s %s %s" % (curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", "/tmp/cookies.txt"))
             if "LD_LIBRARY_PATH" in environ.keys():
@@ -454,7 +454,7 @@ def dlThread():
             kill(curlp.pid, SIGTERM)
             sleep(1)
         except Exception, e:
-            Log("Error in Download Thread: %s" % e)
+            Log("Error in download thread: %s" % e)
         # Issue a refresh to the TTG folder
         UpdateTTGFolder()
         DL_QUEUE.popleft()
@@ -470,7 +470,7 @@ def downloadLocal(url, title, tagline):
     global DL_QUEUE
     ttgdir = Prefs['togodir']
     if not ttgdir:
-        return ObjectContainer(header='Error', message='TiVo To Go Download Directory is not available from the preferences.', title2='ERROR: No TTG Directory')
+        return ObjectContainer(header='Error', message='TiVo To Go download directory is not set in preferences.', title2='ERROR: No TTG directory')
     try:
         pth = path.join(ttgdir, "tmp.txt")
         f = open(pth, O_CREAT | O_RDWR)
@@ -478,8 +478,8 @@ def downloadLocal(url, title, tagline):
         close(f)
         unlink(pth)
     except Exception, e:
-        Log("TTG Exception: %s" % e)
-        return ObjectContainer(header='Error', message='TiVo To Go Download Directory is not writeable', title2='ERROR: Cannot Write to TTG dir')
+        Log("TTG exception: %s" % e)
+        return ObjectContainer(header='Error', message='TiVo To Go download directory is not writeable', title2='ERROR: Cannot Write to TTG directory')
 
     Log("URL: %s" % url)
     Log("Title: %s" % title)
@@ -489,8 +489,8 @@ def downloadLocal(url, title, tagline):
     rpc_password = Prefs['rpc_password']
     if tagline and rpc_username and rpc_password:
         title_search = title[:title.find(" - ")]
-        Log("Search Title  : %s" % title_search)
-        Log("Search Episode: %s" % tagline)
+        Log("Search title  : %s" % title_search)
+        Log("Search episode: %s" % tagline)
         Log("Executing episodeSearch")
         remote = Remote(rpc_username, rpc_password)
         result = remote.episodeSearch(title_search, tagline)
@@ -501,7 +501,7 @@ def downloadLocal(url, title, tagline):
                 episodeNum = str(c.get('episodeNum')).lstrip('[').rstrip(']').zfill(2)
                 if seasonNum != "None" and episodeNum != "None":
                     title = title_search + ' S' + seasonNum + 'E' + episodeNum + ' ' + tagline
-        Log("Updated Title : %s" % title)
+        Log("Updated title : %s" % title)
 
     try:
         valid_chars = list("-_.() %s%s" % (string.ascii_letters, string.digits))
@@ -522,12 +522,12 @@ def downloadLocal(url, title, tagline):
             message = 'Queued download of: %s' % title
             title2 = 'Download Queued'
         else:
-            message = 'Already Queued: %s' % title
+            message = 'Already queued: %s' % title
             title2 = 'Download Queued'
     except Exception, e:
         DownloadThread = None
-        Log("Error starting DL thread: %s" % e)
-        message = 'Error starting the Download Thread'
+        Log("Error starting download thread: %s" % e)
+        message = 'Error starting the download thread'
         title2 = 'Download Error'
 
     return ObjectContainer(header=title2, message=message, title2=title2)
@@ -554,7 +554,7 @@ def discoverTiVo(oc):
         serv = zeroconf.Zeroconf()
         browser = zeroconf.ServiceBrowser(serv, REMOTE, ZCListener(tivo_names))
     except Exception, e:
-        Log("Error staring Zero Conf: %s" % e)
+        Log("Error staring zeroconf: %s" % e)
         return oc
 
     # Give them a second to respond
@@ -576,7 +576,7 @@ def discoverTiVo(oc):
     # Now get the addresses -- this is the slow part
     swversion = re.compile('(\d*.\d*)').findall
     for t in tivo_names:
-        Log("Found TiVo by Name: %s" % t)
+        Log("Found TiVo by name: %s" % t)
         s = serv.getServiceInfo(REMOTE, t)
         if s:
             tivoName = t.replace('.' + REMOTE, '')
@@ -589,7 +589,7 @@ def discoverTiVo(oc):
                 Log("Found TiVo URL %s" % url)
                 oc.add(DirectoryObject(key=Callback(getTivoShows, tivoName=tivoName, url=url, tivoip=addr), title=L(tivoName)))
             except Exception, e:
-                Log("Error finding Tivo: %s" % e)
+                Log("Error finding TiVo: %s" % e)
                 pass
 
     serv.close()
@@ -627,7 +627,7 @@ def getStatus(rand, execkill=0):
         while jobs:
             (fileName, url) = jobs.popleft()
             oc.add(DirectoryObject(key = Callback(getStatus, rand=str(Util.Random())), title = 'Queued: %s' % fileName))
-        oc.add(DirectoryObject(key = Callback(getStatus, rand=str(Util.Random()), execkill = 1), title = 'Kill Current Job...'))
+        oc.add(DirectoryObject(key = Callback(getStatus, rand=str(Util.Random()), execkill = 1), title = 'Kill current job ...'))
     else:
         oc.add(DirectoryObject(key = Callback(getStatus, rand=str(Util.Random())), title = 'Job Queue Empty'))
     oc.add(DirectoryObject(key = Callback(getStatus, rand=str(Util.Random())), title = 'Refresh'))
@@ -651,7 +651,7 @@ def MainMenu():
     global DownloadThread
     if DownloadThread:
         oc.add(DirectoryObject(key = Callback(getStatus, rand=str(Util.Random())), title = 'Active Downloads'))
-    oc.add(PrefsObject(title=L("Preferences...")))
+    oc.add(PrefsObject(title=L("Preferences ...")))
 
     return oc
 
@@ -701,11 +701,11 @@ class Remote(object):
     try:
       self.ssl_socket.connect((TIVO_ADDR, TIVO_PORT_SSL))
     except:
-      Log("connect error")
+      Log("Connect error")
     try:
       self.Auth(username, password)
     except:
-      Log("credential error")
+      Log("Credential error")
 
   def Read(self):
     start_line = ''
