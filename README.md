@@ -46,8 +46,7 @@ _A:_ Yes! If you enable the download option and specify a folder name, the plugi
 - use dynamic sockets and a fixed URL for the live stream video
 - validate TiVo credentials when saving preferences (in the validatePrefs placeholder)
 - set thumbnails for folders, episodes, download action, etc.
-- fix Suggestions folder
-- check for valid characters in download filename
+- fix Suggestions folder (issue #[1](https://github.com/jradwan/TiVoToGo.bundle/issues/1))
 
 - - -
 ## Contact
