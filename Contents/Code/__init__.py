@@ -504,9 +504,8 @@ def downloadLocal(url, title, tagline):
         Log("Updated Title : %s" % title)
 
     try:
-        if sys.platform == "win32":
-            valid_chars = list("-_.() %s%s" % (string.ascii_letters, string.digits))
-            title = ''.join(c for c in list(title) if c in valid_chars)
+        valid_chars = list("-_.() %s%s" % (string.ascii_letters, string.digits))
+        title = ''.join(c for c in list(title) if c in valid_chars)
         fileName = path.join(ttgdir, title + ".mpg")
         jobs = copy.deepcopy(DL_QUEUE)
         do_dl = True
