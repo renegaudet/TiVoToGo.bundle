@@ -2,7 +2,7 @@ from subprocess import Popen, PIPE
 from signal import *
 from os import kill, getpid, environ, path, unlink, open, close, write, O_RDWR, O_CREAT
 import sys
-import platform
+import platform, tempfile
 from time import sleep
 import urllib2, cookielib, ssl
 from lxml import etree
@@ -329,8 +329,8 @@ class MyVideoHandler(BaseHTTPRequestHandler):
       if "LD_LIBRARY_PATH" in environ.keys():
         del environ["LD_LIBRARY_PATH"]
       curl = getCurl()
-      Log.Debug("CMD: %s %s %s %s %s %s %s %s" % (curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", "/tmp/cookies.txt"))
-      curlp = Popen([curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", "/tmp/cookies.txt"], stdout=PIPE)
+      Log.Debug("CMD: %s %s %s %s %s %s %s %s" % (curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", tempfile.gettempdir()+"/cookies.txt"))
+      curlp = Popen([curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", tempfile.gettempdir()+"/cookies.txt"], stdout=PIPE)
       if Prefs['tivolibre']:
           tvd = getTvl()
           java_path = Prefs['java_path']
@@ -429,14 +429,14 @@ def dlThread():
         try:
             Log("Downloading: %s from: %s", fileName, url)
             curl = getCurl()
-            Log.Debug("CMD: %s \"%s\" %s %s %s %s %s %s" % (curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", "/tmp/cookies.txt"))
+            Log.Debug("CMD: %s \"%s\" %s %s %s %s %s %s" % (curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", tempfile.gettempdir()+"/cookies.txt"))
             if "LD_LIBRARY_PATH" in environ.keys():
                 del environ["LD_LIBRARY_PATH"]
             try:
-                unlink("/tmp/cookies.txt")
+                unlink(tempfile.gettempdir()+"/cookies.txt")
             except:
                 pass
-            curlp = Popen([curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", "/tmp/cookies.txt"], stdout=PIPE)
+            curlp = Popen([curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", tempfile.gettempdir()+"/cookies.txt"], stdout=PIPE)
             if Prefs['tivolibre']: 
                 tvd = getTvl()
                 java_path = Prefs['java_path']
