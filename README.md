@@ -20,6 +20,7 @@ _A:_ Yes! If you enable the download option and specify a folder name, the plugi
 
 - Linux, OSX or Windows Plex Server (no ARM processor NAS support)
 - on Linux, OSX or X86 NAS, [curl](https://curl.haxx.se/) must be installed
+- 32-bit Java runtime (for [tivolibre](https://github.com/fflewddur/tivolibre))
 
 ### Steps
 
