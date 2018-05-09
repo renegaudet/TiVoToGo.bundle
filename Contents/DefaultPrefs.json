@@ -6,12 +6,6 @@
 		"label": "TiVo Media Access Key"
 	},
 	{
-		"id": "tivoStaticIP",
-		"type": "text",
-		"default": "",
-		"label": "Forced TiVo IP address (leave blank for auto discovery - Linux only)"
-	},
-	{
 		"id": "browseblacklist",
 		"type": "text",
 		"default": "",
