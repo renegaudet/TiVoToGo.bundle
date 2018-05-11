@@ -643,7 +643,11 @@ def MainMenu():
     oc = ObjectContainer()
 
     if (len(myMAK) == 10):
-        discoverTiVo(oc)
+        tivoName = Prefs['tivoStaticIP'] or ""
+        if tivoName == "":
+            discoverTiVo(oc)
+        else:
+            oc.add(DirectoryObject(key=Callback(getTivoShows, tivoName=tivoName, tivoip=tivoName), title=L(tivoName)))
     global DownloadThread
     if DownloadThread:
         oc.add(DirectoryObject(key = Callback(getStatus, rand=str(Util.Random())), title = 'Active Downloads'))
