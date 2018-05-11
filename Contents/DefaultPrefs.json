@@ -9,7 +9,7 @@
 		"id": "tivoStaticIP",
 		"type": "text",
 		"default": "",
-		"label": "Forced TiVo IP address (leave blank for auto discovery - Linux only)"
+		"label": "TiVo IP address (leave blank for auto-discovery)"
 	},
 	{
 		"id": "browseblacklist",
