@@ -329,12 +329,12 @@ class MyVideoHandler(BaseHTTPRequestHandler):
       if "LD_LIBRARY_PATH" in environ.keys():
         del environ["LD_LIBRARY_PATH"]
       curl = getCurl()
-      Log.Debug("CMD: %s %s %s %s %s %s %s %s" % (curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", tempfile.gettempdir()+"/cookies.txt"))
+      Log.Debug("CMD: \"%s\" \"%s\" %s %s %s %s %s \"%s\"" % (curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", tempfile.gettempdir()+"/cookies.txt"))
       curlp = Popen([curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", tempfile.gettempdir()+"/cookies.txt"], stdout=PIPE)
       if Prefs['tivolibre']:
           tvd = getTvl()
           java_path = Prefs['java_path']
-          Log.Debug("PIPED to: %s %s \"%s\" %s %s %s" % (java_path, "-jar", tvd, "-m", getMyMAK(), "-"))
+          Log.Debug("PIPED to: \"%s\" %s \"%s\" %s %s %s" % (java_path, "-jar", tvd, "-m", getMyMAK(), "-"))
           tivodecode = Popen([java_path, "-jar", tvd, "-m", getMyMAK(), "-"],stdin=curlp.stdout, stdout=PIPE)
       else:
           tvd = getTvd()
@@ -429,7 +429,7 @@ def dlThread():
         try:
             Log("Downloading: %s from: %s", fileName, url)
             curl = getCurl()
-            Log.Debug("CMD: %s \"%s\" %s %s %s %s %s %s" % (curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", tempfile.gettempdir()+"/cookies.txt"))
+            Log.Debug("CMD: \"%s\" \"%s\" %s %s %s %s %s \"%s\"" % (curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", tempfile.gettempdir()+"/cookies.txt"))
             if "LD_LIBRARY_PATH" in environ.keys():
                 del environ["LD_LIBRARY_PATH"]
             try:
@@ -440,7 +440,7 @@ def dlThread():
             if Prefs['tivolibre']: 
                 tvd = getTvl()
                 java_path = Prefs['java_path']
-                Log.Debug("PIPED to: %s %s \"%s\" %s %s %s \"%s\" %s" % (java_path, "-jar", tvd, "-m", getMyMAK(), "-o", fileName, "-"))
+                Log.Debug("PIPED to: \"%s\" %s \"%s\" %s %s %s \"%s\" %s" % (java_path, "-jar", tvd, "-m", getMyMAK(), "-o", fileName, "-"))
                 tivodecode = Popen([java_path, "-jar", tvd, "-m", getMyMAK(), "-o", fileName, "-"], stdin=curlp.stdout)
             else:
                 tvd = getTvd()
