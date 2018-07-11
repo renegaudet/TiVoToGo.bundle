@@ -335,7 +335,10 @@ class MyVideoHandler(BaseHTTPRequestHandler):
           tvd = getTvl()
           java_path = Prefs['java_path']
           Log.Debug("PIPED to: \"%s\" %s \"%s\" %s %s %s" % (java_path, "-jar", tvd, "-m", getMyMAK(), "-"))
-          tivodecode = Popen([java_path, "-jar", tvd, "-m", getMyMAK(), "-"],stdin=curlp.stdout, stdout=PIPE)
+          if sys.platform == "win32":
+              tivodecode = Popen([java_path, "-jar", tvd, "-m", getMyMAK(), "-"],stdin=curlp.stdout, shell=True, stdout=PIPE)
+          else:
+              tivodecode = Popen([java_path, "-jar", tvd, "-m", getMyMAK(), "-"],stdin=curlp.stdout, stdout=PIPE)
       else:
           tvd = getTvd()
           Log.Debug("PIPED to: \"%s\" %s %s %s" % (tvd, "-m", getMyMAK(), "-"))
@@ -441,7 +444,10 @@ def dlThread():
                 tvd = getTvl()
                 java_path = Prefs['java_path']
                 Log.Debug("PIPED to: \"%s\" %s \"%s\" %s %s %s \"%s\" %s" % (java_path, "-jar", tvd, "-m", getMyMAK(), "-o", fileName, "-"))
-                tivodecode = Popen([java_path, "-jar", tvd, "-m", getMyMAK(), "-o", fileName, "-"], stdin=curlp.stdout)
+                if sys.platform == "win32":
+                    tivodecode = Popen([java_path, "-jar", tvd, "-m", getMyMAK(), "-o", fileName, "-"], stdin=curlp.stdout, shell=True)
+                else:
+                    tivodecode = Popen([java_path, "-jar", tvd, "-m", getMyMAK(), "-o", fileName, "-"], stdin=curlp.stdout)
             else:
                 tvd = getTvd()
                 Log.Debug("PIPED to: \"%s\" %s %s %s \"%s\" %s" % (tvd, "-m", getMyMAK(), "-o", fileName, "-"))
