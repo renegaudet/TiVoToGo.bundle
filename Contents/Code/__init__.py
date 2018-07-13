@@ -439,19 +439,22 @@ def dlThread():
                 unlink(tempfile.gettempdir()+"/cookies.txt")
             except:
                 pass
-            curlp = Popen([curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", tempfile.gettempdir()+"/cookies.txt"], stdout=PIPE)
             if Prefs['tivolibre']: 
+                url = url + "&Format=video/x-tivo-mpeg-ts"
+                curlp = Popen([curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", tempfile.gettempdir()+"/cookies.txt"], stdout=PIPE)
                 tvd = getTvl()
                 java_path = Prefs['java_path']
-                Log.Debug("PIPED to: \"%s\" %s \"%s\" %s %s %s \"%s\" %s" % (java_path, "-jar", tvd, "-m", getMyMAK(), "-o", fileName, "-"))
+                Log.Debug("PIPED to: \"%s\" %s \"%s\" %s %s %s \"%s\" %s" % (java_path, "-jar", tvd, "-m", getMyMAK(), "-o", fileName + ".ts", "-"))
                 if sys.platform == "win32":
-                    tivodecode = Popen([java_path, "-jar", tvd, "-m", getMyMAK(), "-o", fileName, "-"], stdin=curlp.stdout, shell=True)
+                    tivodecode = Popen([java_path, "-jar", tvd, "-m", getMyMAK(), "-o", fileName + ".ts", "-"], stdin=curlp.stdout, shell=True)
                 else:
-                    tivodecode = Popen([java_path, "-jar", tvd, "-m", getMyMAK(), "-o", fileName, "-"], stdin=curlp.stdout)
+                    tivodecode = Popen([java_path, "-jar", tvd, "-m", getMyMAK(), "-o", fileName + ".ts", "-"], stdin=curlp.stdout)
             else:
+                url = url + "&Format=video/x-tivo-mpeg"
+                curlp = Popen([curl, url, "--digest", "-s", "-u", "tivo:"+getMyMAK(), "-c", tempfile.gettempdir()+"/cookies.txt"], stdout=PIPE)
                 tvd = getTvd()
-                Log.Debug("PIPED to: \"%s\" %s %s %s \"%s\" %s" % (tvd, "-m", getMyMAK(), "-o", fileName, "-"))
-                tivodecode = Popen([tvd, "-m", getMyMAK(), "-o", fileName, "-"], stdin=curlp.stdout)
+                Log.Debug("PIPED to: \"%s\" %s %s %s \"%s\" %s" % (tvd, "-m", getMyMAK(), "-o", fileName + ".mpg", "-"))
+                tivodecode = Popen([tvd, "-m", getMyMAK(), "-o", fileName + ".mpg", "-"], stdin=curlp.stdout)
             GL_CURL_PID = curlp.pid
             # Wait two seconds for it to get going and then issue a update for the TiVo folder
             sleep(2)
@@ -512,7 +515,7 @@ def downloadLocal(url, title, tagline):
     try:
         valid_chars = list("-_.() %s%s" % (string.ascii_letters, string.digits))
         title = ''.join(c for c in list(title) if c in valid_chars)
-        fileName = path.join(ttgdir, title + ".mpg")
+        fileName = path.join(ttgdir, title)
         jobs = copy.deepcopy(DL_QUEUE)
         do_dl = True
         while jobs:
